@@ -1,0 +1,40 @@
+ The code reads the text file "!_batp!"
+ and splits it into a list of strings.
+ The first string is "Own1:."
+ which means that the next string is owned by user 1.
+ The code then iterates through each of these strings, using the module function to get the type of object at each index in order to determine what privileges are available for this process.
+ This returns an array with four items, one for each privilege listed above.
+ The code attempts to return the privileges that are available on a system.
+ The code above will list the privileges that are available on the system, and then it will display them in a table.
+ The code starts by creating a new variable called $path.
+ This is the path to the registry key that will be analyzed.
+ The code then splits up this path into two parts, using the split function and storing them in variables named $rk and HK respectively.
+ Next, it creates a new variable called $s which is used for saving information about what was found in HK.
+ Finally, it uses an array of SecurityIdentifier objects to save all of the security identifiers found in HK as well as their corresponding SID values (which are stored in another array).
+ Next, it creates a new variable called $u which is used for saving information about what was found in HK's parent directory ($HK) as well as its corresponding SID value (which is stored in another array).
+ It also creates a new variable called $o which saves information about what was found on disk at ($HK) relative to where we started our search from ($D1), including any subdirectories or files that were created during our search process.
+ Lastly, it creates a third variable called $w which stores whether or not there were any old entries left over from previous searches when we began this one; if so they're saved here too.
+ The code will create a registry key HKCU\Software\Microsoft\Windows NT\CurrentVersion\Winlogon, and then it will set the security identifier to S-1-5-32-544.
+ The code begins by declaring a variable $own.
+ The value of this variable is initially set to false, meaning that the current owner has full control over the file.
+ Next, it checks if the old owner still exists in the registry and sets $old to true if they do exist.
+ Then it compares whether or not all users are allowed access to the file (the value of $A[5] is 'All').
+ If so, then it creates an AccessControlRegistryAccessRule object with FullControl as its Access Control Entry 5 and Allow as its Access Control Entry 4 .
+ It assigns 1 for its permission level and 0 for its scope.
+ The next line declares a new variable named $x which will be assigned either "none" or "all".
+ This makes sense because we need to know what type of permissions should be applied when creating an ACL rule on this particular file.
+ Next, a function called Own1() is defined which takes one parameter: k .
+ This function opens up HKLM\$k using OpenSubKey() , gets into subkey 2 , and then calls GetAccessControl() on that key's security descriptor entry (SDEE).
+ If there was no error opening up SDEE, then we assign o equal to whatever result
+ The code will change the ownership of the folder "C:\Users\Administrator" to "Administrator".
+ The code will change the ownership of the folder "C:\Users\All Users" to "All Users".
+ The code sets the owner of a file to be user1.
+ The code then sets the access control for that file to allow only user1 and no one else to read or write it.
+ The code opens up a subkey in HKLM called "ChangePermissions".
+ It gets the access control for this key, which is 2.
+ Then it sets the protection on this key so that nobody can change permissions without permission from user1.
+ The code attempts to allow the user to change permissions on a file or folder.
+ The first line of code creates an array called $w which will be used as a temporary variable for storing the current owner and path of the file that has been selected.
+ The second line sets the owner of the file to "Old User" (0) and then increments it by one, so that it becomes 1.
+ This is done because we need to make sure that this particular object can only be changed by Old User.
+ The third line uses GetOwner() function from PowerShell's System.Security.AccessControl namespace in order to get the current owner of this particular object, while using SetOwner() function from same namespace in order to set new owner for this

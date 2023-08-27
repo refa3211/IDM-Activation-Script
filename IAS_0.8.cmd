@@ -58,13 +58,18 @@ if /i "%%A"=="/s"   set Unattended=1&set Silent=1
 ::========================================================================================================================================
 
 set "nul=>nul 2>&1"
-set "_psc=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
+set "POWERSHELL=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
 set winbuild=1
 for /f "tokens=6 delims=[]. " %%G in ('ver') do set winbuild=%%G
 call :_colorprep
 set "nceline=echo: &echo ==== ERROR ==== &echo:"
 set "line=________________________________________________________________________________________"
-set "_buf={$W=$Host.UI.RawUI.WindowSize;$B=$Host.UI.RawUI.BufferSize;$W.Height=31;$B.Height=300;$Host.UI.RawUI.WindowSize=$W;$Host.UI.RawUI.BufferSize=$B;}"
+set "_buf={$W=$Host.UI.RawUI.WindowSize;
+      $B=$Host.UI.RawUI.BufferSize;
+      $W.Height=31;
+      $B.Height=300;
+      $Host.UI.RawUI.WindowSize=$W;
+      $Host.UI.RawUI.BufferSize=$B;}"
 
 if defined Silent if not defined activate if not defined reset exit /b
 if defined Silent call :begin %nul% & exit /b
@@ -73,7 +78,7 @@ if defined Silent call :begin %nul% & exit /b
 
 ::========================================================================================================================================
 
-if not exist "%_psc%" (
+if not exist "%POWERSHELL%" (
 %nceline%
 echo Powershell is not installed in the system.
 echo Aborting...
@@ -111,7 +116,7 @@ setlocal EnableDelayedExpansion
 ::  Thanks to @abbodi1406 for the powershell method and solving special characters issue in file path name.
 
 %nul% reg query HKU\S-1-5-19 || (
-if not defined _elev %nul% %_psc% "start cmd.exe -arg '/c \"!_PSarg:'=''!\"' -verb runas" && exit /b
+if not defined _elev %nul% %POWERSHELL% "start cmd.exe -arg '/c \"!_PSarg:'=''!\"' -verb runas" && exit /b
 %nceline%
 echo This script require administrator privileges.
 echo To do so, right click on this script and select 'Run as administrator'.
@@ -243,7 +248,7 @@ exit /b
 
 :export
 
-%nul% %_psc% "$f=[io.file]::ReadAllText('!_batp!') -split \":%~1\:.*`r`n\"; [io.file]::WriteAllText('%~2',$f[1].Trim(),[System.Text.Encoding]::ASCII);"
+%nul% %POWERSHELL% "$f=[io.file]::ReadAllText('!_batp!') -split \":%~1\:.*`r`n\"; [io.file]::WriteAllText('%~2',$f[1].Trim(),[System.Text.Encoding]::ASCII);"
 exit/b
 
 ::========================================================================================================================================
@@ -252,7 +257,7 @@ exit/b
 
 if not defined Unattended (
 mode 93, 32
-%nul% %_psc% "&%_buf%"
+%nul% %POWERSHELL% "&%_buf%"
 )
 
 echo:
@@ -284,7 +289,7 @@ goto done
 
 if not defined Unattended (
 mode 93, 32
-%nul% %_psc% "&%_buf%"
+%nul% %POWERSHELL% "&%_buf%"
 )
 
 echo:
@@ -299,7 +304,7 @@ goto done
 :: Internet check with internetdownloadmanager.com ping and port 80 test
 
 ping -n 1 internetdownloadmanager.com >nul || (
-%_psc% "$t = New-Object Net.Sockets.TcpClient;try{$t.Connect("""internetdownloadmanager.com""", 80)}catch{};$t.Connected" | findstr /i true 1>nul
+%POWERSHELL% "$t = New-Object Net.Sockets.TcpClient;try{$t.Connect("""internetdownloadmanager.com""", 80)}catch{};$t.Connected" | findstr /i true 1>nul
 )
 
 if not [%errorlevel%]==[0] (
@@ -541,7 +546,7 @@ echo Added - !reg!
 ) else (
 set _error=1
 set "reg=%reg:"=%"
-%_psc% write-host 'Failed' -fore 'white' -back 'DarkRed'  -NoNewline&echo  - !reg!
+%POWERSHELL% write-host 'Failed' -fore 'white' -back 'DarkRed'  -NoNewline&echo  - !reg!
 )
 exit /b
 
@@ -553,7 +558,7 @@ if exist %regdata% del /f /q %regdata% %nul%
 
 reg query %CLSID% > %regdata%
 
-%nul% %_psc% "(gc %regdata%) -replace 'HKEY_CURRENT_USER', 'HKCU' | Out-File -encoding ASCII %regdata%"
+%nul% %POWERSHELL% "(gc %regdata%) -replace 'HKEY_CURRENT_USER', 'HKCU' | Out-File -encoding ASCII %regdata%"
 
 for /f %%a in (%regdata%) do (
 for /f "tokens=%_tok% delims=\" %%# in ("%%a") do (
@@ -615,7 +620,7 @@ echo Deleted - !reg!
 ) else (
 set "reg=%reg:"=%"
 set _error=1
-%_psc% write-host 'Failed' -fore 'white' -back 'DarkRed'  -NoNewline & echo  - !reg!
+%POWERSHELL% write-host 'Failed' -fore 'white' -back 'DarkRed'  -NoNewline & echo  - !reg!
 )
 
 exit /b
@@ -635,7 +640,7 @@ set /a lockedkeys+=1
 ) else (
 set _error=1
 set "reg=%reg:"=%"
-%_psc% write-host 'Failed' -fore 'white' -back 'DarkRed'  -NoNewline&echo  - !reg!
+%POWERSHELL% write-host 'Failed' -fore 'white' -back 'DarkRed'  -NoNewline&echo  - !reg!
 )
 
 exit /b
@@ -655,17 +660,59 @@ exit /b
 
 :reg_own
 
-%_psc% $A='%~1','%~2','%~3','%~4','%~5','%~6';iex(([io.file]::ReadAllText('!_batp!')-split':Own1\:.*')[1])&exit/b:Own1:
+%POWERSHELL% $A='%~1','%~2','%~3','%~4','%~5','%~6';
+iex(([io.file]::ReadAllText('!_batp!')-split':Own1\:.*')[1])&exit/b:Own1:
 $D1=[uri].module.gettype('System.Diagnostics.Process')."GetM`ethods"(42) |where {$_.Name -eq 'SetPrivilege'} #`:no-ev-warn
-'SeSecurityPrivilege','SeTakeOwnershipPrivilege','SeBackupPrivilege','SeRestorePrivilege'|foreach {$D1.Invoke($null, @("$_",2))}
-$path=$A[0]; $rk=$path-split'\\',2; $HK=gi -lit Registry::$($rk[0]) -fo; $s=$A[1]; $sps=[Security.Principal.SecurityIdentifier]
-$u=($A[2],'S-1-5-32-544')[!$A[2]];$o=($A[3],$u)[!$A[3]];$w=$u,$o |% {new-object $sps($_)}; $old=!$A[3];$own=!$old; $y=$s-eq'all'
+'SeSecurityPrivilege','SeTakeOwnershipPrivilege','SeBackupPrivilege','SeRestorePrivilege'|
+foreach {$D1.Invoke($null, @("$_",2))}
+$path=$A[0]; 
+$regkey=$path-split'\\',2; 
+$HK=gi -lit Registry::$($regkey[0]) -fo; 
+$s=$A[1]; 
+$sps=[Security.Principal.SecurityIdentifier]
+$u=($A[2],'S-1-5-32-544')[!$A[2]];
+$o=($A[3],$u)[!$A[3]];
+$w=$u,$o |% {new-object $sps($_)}; 
+$old=!$A[3];
+$own=!$old; 
+$y=$s-eq'all'
 $rar=new-object Security.AccessControl.RegistryAccessRule( $w[0], ($A[5],'FullControl')[!$A[5]], 1, 0, ($A[4],'Allow')[!$A[4]] )
-$x=$s-eq'none';function Own1($k){$t=$HK.OpenSubKey($k,2,'TakeOwnership');if($t){0,4|%{try{$o=$t.GetAccessControl($_)}catch{$old=0}
-};if($old){$own=1;$w[1]=$o.GetOwner($sps)};$o.SetOwner($w[0]);$t.SetAccessControl($o); $c=$HK.OpenSubKey($k,2,'ChangePermissions')
-$p=$c.GetAccessControl(2);if($y){$p.SetAccessRuleProtection(1,1)};$p.ResetAccessRule($rar);if($x){$p.RemoveAccessRuleAll($rar)}
-$c.SetAccessControl($p);if($own){$o.SetOwner($w[1]);$t.SetAccessControl($o)};if($s){$subkeys=$HK.OpenSubKey($k).GetSubKeyNames()
-foreach($n in $subkeys){Own1 "$k\$n"}}}};Own1 $rk[1];if($env:VO){get-acl Registry::$path|fl} #:Own1: lean & mean snippet by AveYo
+$x=$s-eq'none';
+function Own1($k){
+  $t=$HK.OpenSubKey($k,2,'TakeOwnership');
+  if($t){
+    0,4|%{
+      try{$o=$t.GetAccessControl($_)
+      }
+      catch{
+        $old=0}
+};
+if($old){
+  $own=1;
+  $w[1]=$o.GetOwner($sps)
+  };
+  $o.SetOwner($w[0]);
+  $t.SetAccessControl($o); 
+  $c=$HK.OpenSubKey($k,2,'ChangePermissions')
+$p=$c.GetAccessControl(2);
+if($y){
+  $p.SetAccessRuleProtection(1,1)};
+  $p.ResetAccessRule($rar);
+  if($x){
+    $p.RemoveAccessRuleAll($rar)
+    }
+$c.SetAccessControl($p);
+if($own){
+  $o.SetOwner($w[1]);
+  $t.SetAccessControl($o)};
+  if($s){
+    $subkeys=$HK.OpenSubKey($k).GetSubKeyNames()
+foreach($key in $subkeys){
+  Own1 "$k\$key"}}}};
+  Own1 $regkey[1];
+  if($env:VO){
+    get-acl Registry::$path|fl
+    } #:Own1: lean & mean snippet by AveYo
 
 ::========================================================================================================================================
 
