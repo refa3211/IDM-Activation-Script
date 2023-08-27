@@ -38,3 +38,6 @@
  The second line sets the owner of the file to "Old User" (0) and then increments it by one, so that it becomes 1.
  This is done because we need to make sure that this particular object can only be changed by Old User.
  The third line uses GetOwner() function from PowerShell's System.Security.AccessControl namespace in order to get the current owner of this particular object, while using SetOwner() function from same namespace in order to set new owner for this
+
+from
+https://denigma.app/#demo
